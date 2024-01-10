@@ -1,0 +1,38 @@
+.contain-upload {
+  /* position: relative; */
+  background: #f8f8f8;
+  /* border: 1px solid gray; */
+}
+
+.card-upload img {
+  border-radius: 15px;
+}
+
+.header-upload {
+  padding: 10px;
+  background: white;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  align-items: center;
+  padding-inline: 25px;
+}
+
+.header-upload p {
+  padding-top: 10px;
+  font-weight: 900;
+}
+.body-upload {
+  background: #f4f4f4;
+}
+.btn-getstarted a {
+  color: white !important;
+  font-weight: 900 !important;
+}
+
+.btn-upload {
+  font-weight: 900;
+}
+
+/* .card-upload {
+  position: absolute;
+  top: -10%;
+} */

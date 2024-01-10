@@ -1,0 +1,80 @@
+body {
+  margin: 0;
+  background-color: #3b2c3f;
+  overflow-x: hidden;
+}
+
+.night {
+  height: 100vh;
+  width: 100%;
+  border: 1px solid black;
+  background: url("../../assets/images/bg-error.jpg");
+  background-size: cover;
+  position: relative;
+  box-shadow: 1px 2px 60px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.error p {
+  color: #a55ba6;
+  font-weight: 900;
+  text-align: center;
+  text-shadow: 3px 3px 0px #665368;
+  font-size: calc(15px + 5vmin);
+  height: 400px;
+  width: 100%;
+  bottom: 25%;
+  display: block;
+  position: absolute;
+}
+
+.error span {
+  left: 0%;
+  font-weight: 900;
+  position: absolute;
+  color: #392a3e;
+  height: 400px;
+  width: 100%;
+  bottom: -5%;
+  text-shadow: 5px 5px 0px #392a3e;
+  font-size: calc(40px + 44vmin);
+  z-index: 0;
+}
+
+.surface {
+  height: 400px;
+  width: 500%;
+  bottom: -10%;
+  display: block;
+  position: absolute;
+  background: url("../../assets/images/road.png");
+  left: 0%;
+  background-repeat: repeat-x;
+  animation: moveRight 6s linear infinite;
+  overflow: hidden;
+}
+
+.car {
+  position: absolute;
+  bottom: 5%;
+  left: 24%;
+  animation: suspension 1s linear infinite;
+}
+
+@keyframes moveRight {
+  100% {
+    transform: translateX(-2950px);
+  }
+}
+
+@keyframes suspension {
+  100% {
+    transform: translateY(-1px);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+  0% {
+    transform: translateY(-1px);
+  }
+}

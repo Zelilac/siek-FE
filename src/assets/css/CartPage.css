@@ -1,0 +1,162 @@
+.cart-order p {
+  font-size: 0.8em;
+  color: #917977;
+}
+.cart-order span {
+  font-size: 1.3em;
+  color: black;
+  font-weight: 500;
+}
+
+.price-order p {
+  font-size: 1em;
+  color: black;
+  font-weight: 900;
+}
+
+.divide-order {
+  border: 0.1px black;
+  opacity: 0.1;
+}
+
+.title-address {
+  background: white;
+  border-radius: 10px;
+}
+
+.title-address div a {
+  color: white !important;
+  padding-inline: 7px;
+  background: #1a97fd;
+  border-radius: 50%;
+}
+
+.title-address p {
+  font-weight: 900;
+}
+
+.btn-transaction a {
+  color: white !important;
+  text-decoration: none;
+  text-align: center;
+  padding-inline: 20%;
+  padding-block: 1%;
+  background: linear-gradient(
+    90deg,
+    rgba(89, 178, 254, 1) 6%,
+    rgba(17, 148, 255, 1) 100%
+  );
+  transition: ease-out 1s;
+  box-shadow: inset 0 0 0 0
+    linear-gradient(
+      90deg,
+      rgba(131, 58, 180, 1) 0%,
+      rgba(29, 41, 253, 1) 50%,
+      rgba(69, 205, 252, 1) 100%
+    );
+  outline: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-transaction a:hover {
+  color: white !important;
+  text-decoration: none;
+  text-align: center;
+  padding-inline: 20%;
+  padding-block: 1%;
+  background: linear-gradient(
+    90deg,
+    rgba(40, 142, 147, 1) 3%,
+    rgba(34, 129, 133, 1) 41%,
+    rgba(87, 142, 145, 1) 58%,
+    rgba(118, 179, 180, 1) 95%
+  );
+  box-shadow: inset 450px 0 0 0 rgb(131, 58, 180);
+  outline: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-order a {
+  color: white !important;
+  padding-inline: 10px;
+  padding-block: 5px;
+  border-radius: 10%;
+  cursor: pointer;
+  background: #e55a54;
+  transition: ease-out 1s;
+}
+
+.delete-order a:hover {
+  color: white !important;
+  padding-inline: 10px;
+  padding-block: 5px;
+  border-radius: 10%;
+  cursor: pointer;
+  background: linear-gradient(
+    90deg,
+    rgb(141, 55, 8) 3%,
+    rgb(230, 87, 10) 41%,
+    rgb(213, 71, 19) 58%,
+    red 95%
+  );
+  box-shadow: inset 50px 0 0 0 red;
+}
+
+.price-summary-order {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  background: #f7f7f7;
+}
+
+.address-title-order {
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  position: relative;
+  background: #229af8;
+  height: 40px;
+}
+
+.tag-order {
+  position: absolute;
+  bottom: -10%;
+}
+
+.tag-order a {
+  padding: 10px;
+  background: #7cd1a7;
+  font-weight: 900;
+  color: white !important;
+  border-radius: 10px;
+  border: 2px solid white;
+}
+
+.address-summary {
+  background: white;
+}
+
+.address-summary div p {
+  margin-top: 15px;
+  /* line-height: 0.5; */
+}
+
+.row-address {
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.row-order {
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border: none;
+  border-radius: 15px;
+}
+
+.form-shipping {
+  background: white;
+  padding-block: 15px;
+  border-radius: 10px;
+}
+
+.add-new-address {
+  background: white;
+}
