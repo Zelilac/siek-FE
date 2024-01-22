@@ -2,6 +2,11 @@ import React from 'react';
 import HTTP from '../../service/HTTP';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { Button } from "primereact/button";
+import { ConfirmDialog } from "primereact/confirmdialog";
+import DialogEdit from "../../components/user/DialogEdit";
+import { Toast } from "primereact/toast";
+import { connect } from "react-redux";
 
 class ListUsersPage extends React.Component {
     constructor(props) {
@@ -10,7 +15,9 @@ class ListUsersPage extends React.Component {
             totalRevenue: 0,
             totalUserTrans: 0,
             usersList: [],
-            registeredUser: 0
+            registeredUser: 0,
+            userDetail: {},
+            userDialog: false
         }
     }
 
@@ -50,11 +57,72 @@ class ListUsersPage extends React.Component {
     printLastUpdate = (rowData) => {
         return <span>{new Date(rowData.updated_at).toLocaleDateString('id')}</span>
     }
+
+    editUser = async (user) => {
+        try {
+            this.setState({
+                userDetail: user,
+                userDialog: true,
+                addDialog: false,
+                confirmDialog: false,
+                idstock: null,
+            });
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    inputChange = (e, property) => {
+        let val = e.target.value;
+        let userDetail = { ...this.state.userDetail };
+        userDetail[`${property}`] = val;
+        this.setState({ userDetail });
+    };
+
+    actionBodyTemplate = (rowData) => {
+        return rowData?.role !== "admin" && (
+            <React.Fragment>
+                <Button
+                    icon="pi pi-pencil"
+                    className="p-button-rounded p-button-success p-mr-2"
+                    onClick={() => this.editUser(rowData)}
+                />
+                <Button
+                    icon="pi pi-trash"
+                    className="p-button-rounded p-button-warning ml-1"
+                    onClick={() => {
+                        console.log(this.props, "asdasdasd")
+                        // this.setState({ confirmDialog: true, idstock: rowData.stock[0].id })
+                    }
+                    }
+                />
+                <ConfirmDialog
+                    visible={this.state.confirmDialog}
+                    onHide={() => this.setState({ confirmDialog: false })}
+                    message="Are you sure you want to proceed?"
+                    header="Confirmation"
+                    icon="pi pi-exclamation-triangle"
+                    accept={() => this.confirmDeleteProduct(rowData.stock[0].id)}
+                    reject={() =>
+                        this.toast.show({
+                            severity: "info",
+                            summary: "Rejected",
+                            detail: "Cancel delete product",
+                            life: 3000,
+                        })
+                    }
+                />
+            </React.Fragment>
+        );
+    };
+
     render() {
-        let { totalRevenue, totalUserTrans, usersList, registeredUser } = this.state
+        let { totalRevenue, totalUserTrans, usersList, registeredUser, userDetail, userDialog } = this.state
         return (
             <div class="main-content">
                 <main>
+                    <Toast ref={(el) => (this.toast = el)} />
                     <div className="my-3">
                         <h2 class="dash-title">Pharmaclick Dashboard</h2>
                         <span>Hello! You logged in as admin</span>
@@ -99,14 +167,37 @@ class ListUsersPage extends React.Component {
                                     <Column field="status" header="User Status" sortable />
                                     <Column field="created_at" body={this.printCreatedDate} header="Join Date" sortable />
                                     <Column field="updated_at" body={this.printLastUpdate} header="Last Update" sortable />
+                                    {this.props.role === "admin" && <Column field="action" body={this.actionBodyTemplate} header="Action" />}
                                 </DataTable>
                             </div>
                         </div>
                     </section>
+                    <DialogEdit
+                        userDetail={userDetail}
+                        userDialog={userDialog}
+                        hide={() => this.setState({ userDialog: false })}
+                        inputChange={(e, property) => {
+                            this.inputChange(e, property);
+                        }}
+                        toast={(a) =>
+                            this.toast.show({
+                                severity: "success",
+                                summary: "Success!",
+                                detail: a,
+                                life: 3000,
+                            })
+                        }
+                        getUser={() => this.getUser()}
+                    />
                 </main>
             </div>
         );
     }
 }
 
-export default ListUsersPage;
+const mapStateToProps = ({ authReducer }) => {
+    return {
+        ...authReducer
+    }
+}
+export default connect(mapStateToProps)(ListUsersPage);

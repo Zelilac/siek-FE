@@ -134,7 +134,7 @@ class LoginPage extends React.Component {
         let { email, password, loading, invalidEmail, invalidPassword, visible, resetEmail, successReset, index } = this.state
         if (this.props.iduser && this.props.role === "user") {
             return <Redirect to="/" />
-        } else if (this.props.iduser && this.props.role === "admin"){
+        } else if (this.props.iduser && (this.props.role === "admin" || this.props.role === "seller")){
             return <Redirect to="/dashboard" />
         }
 

@@ -56,7 +56,7 @@ class App extends React.Component {
       <>
         {this.props.role === "user" ? (
           <UserPage />
-        ) : this.props.role === "admin" ? (
+        ) : this.props.role === "admin" || this.props.role === "seller" ? (
           <AdminPage />
         ) : (
           <VisitorPage />

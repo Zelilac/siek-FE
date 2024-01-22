@@ -280,7 +280,7 @@ class NavbarComp extends React.Component {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </div>
-            ) : this.props.user.role === "admin" ? (
+            ) : this.props.user.role === "admin" || this.props.role === "seller" ? (
               <>
                 <div className="d-flex justify-content-end align-items-center drop-menu">
                   <NavbarText style={{ marginRight: "10px" }}>
