@@ -157,7 +157,7 @@ class DialogProduct extends React.Component {
                     </div>
                     <div className="w-100 my-2">
                         <label htmlFor="minmax-buttons" style={{ fontWeight: 'bold' }}>Price</label>
-                        <InputNumber inputId="minmax-buttons" value={productDetail.stock && productDetail.pack_price} mode="decimal" showButtons min={0} max={100} mode="currency" currency="IDR" />
+                        <InputNumber inputId="minmax-buttons" value={productDetail.stock && productDetail.pack_price} showButtons min={0} max={100} mode="currency" currency="IDR" />
                     </div>
                     <div className="w-100 my-2">
                         <label style={{ fontWeight: 'bold' }} >Description</label>
