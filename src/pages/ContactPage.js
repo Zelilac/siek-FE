@@ -36,7 +36,7 @@ class ContactPage extends React.Component {
     return (
       <Container fluid className="p-0">
         <Row>
-          <Col md="12 mt-3">
+          <Col md="12 mt-5">
             <Carousel showThumbs={false} showStatus={false}>
               <div>
                 <img src={Banner} />
@@ -71,7 +71,7 @@ class ContactPage extends React.Component {
                       <a>
                         <FontAwesomeIcon icon={faEnvelope} />
                       </a>
-                      <span> SekolahKuy@mail.com</span>
+                      <span>smkpastibisa@mail.com</span>
                     </p>
                     <p className="mt-5 icon-contact">
                       <a>

@@ -131,7 +131,7 @@ class NavbarComp extends React.Component {
         >
           <div style={{ textDecoration: "none" }}>
             <NavbarBrand>
-              <img src={Logo} width="150px" alt="logo pharmaclick" />
+              <img src={Logo} width="100px" alt="logo pharmaclick" />
             </NavbarBrand>
           </div>
           <NavbarToggler

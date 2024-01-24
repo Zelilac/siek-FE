@@ -22,7 +22,7 @@ class SidebarComp extends React.Component {
         <div className="sidebar">
           <div className="sidebar-header">
             <h3 className="brand">
-              <span>SekolahKuy</span>
+              <span>SMK Pasti Bisa!</span>
             </h3>
             <label for="sidebar-toggle" className="ti-menu-alt"></label>
           </div>

@@ -156,9 +156,7 @@ class ProductDetailPage extends React.Component {
     console.log("detail", array);
     return (
       <Container className="product-detail px-5 mt-5 pb-5" fluid style={{ marginTop: '3%' }}>
-        <marquee behavior="scroll" direction="right" scrollamount="10" className="mt-4" style={{ color: 'red' }}>
-          Hati-hati dalam membeli obat, sesuaikan dengan gejala yang anda
-          rasakan.
+        <marquee behavior="scroll" direction="right" scrollamount="10" className="mt-4" style={{ color: 'black' }}>
         </marquee>
         <Row>
           <Col xl="3 mt-3" lg="3 mt-3" md="3 mt-3" sm="12 mt-3" xs="12 mt-3">

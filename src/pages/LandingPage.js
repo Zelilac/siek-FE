@@ -25,8 +25,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faApple, faGooglePlay } from "@fortawesome/free-brands-svg-icons";
 import Slider from "react-slick";
-import ProductBanner from "../assets/images/bannerProduct.gif";
-import Phone from "../assets/images/phone1.JPG";
+import ProductBanner from "../assets/images/BannerProduct.gif";
+import Phone from "../assets/images/phone.png";
 import Feedback from "../assets/images/feedback.jpg";
 import Chat from "../assets/images/chat2.png";
 import Delivery from "../assets/images/delivery.png";
@@ -151,12 +151,6 @@ class LandingPage extends React.Component {
               <div>
                 <img src={ProductBanner} />
               </div>
-              <div>
-                <img src="assets/2.jpeg" />
-              </div>
-              <div>
-                <img src="assets/3.jpeg" />
-              </div>
             </Carousel>
           </Col>
         </Row>
@@ -256,7 +250,7 @@ class LandingPage extends React.Component {
 
                               <CardText style={{ fontSize: "12px" }}>
                                 Don't waste time. Order product using
-                                SekolahKuy. reliable and guaranteed quality.
+                                our site. reliable and guaranteed quality.
                               </CardText>
                               <Link
                                 to={`/product`}
@@ -617,7 +611,7 @@ class LandingPage extends React.Component {
             <Row className="btn-getstarted ">
               <div className="d-flex justify-content-center align-items-center flex-wrap m-auto p-5">
                 <Col md="6" sm="12" xs="12" id="left-download">
-                  <h5>Download Pharmaclick Mobile App</h5>
+                  <h5>Download SMK Pasti Bisa Mobile App</h5>
 
                   <p style={{ fontSize: "12px", textAlign: "justify" }}>
                     Your home for health is one tap away. Book appointments,

@@ -202,7 +202,7 @@ class DashboardPage extends React.Component {
             <div class="main-content">
                 <main>
                     <div className="my-3">
-                        <h2 class="dash-title">SekolahKuy Dashboard</h2>
+                        <h2 class="dash-title">SMK Pasti Bisa Dashboard</h2>
                         <span>Hello! You logged in as admin</span>
                     </div>
                     <div class="dash-cards">
