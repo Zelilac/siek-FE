@@ -29,12 +29,12 @@ class SidebarComp extends React.Component {
 
           <div className="sidebar-menu">
             <ul style={{ position: "relative", right: 17 }}>
-              <li>
+              {this.props.role === "admin" && <li>
                 <Link to="/dashboard" style={{ textDecoration: "none" }}>
                   <span className="ti-clipboard"></span>
                   <span>Dashboard</span>
                 </Link>
-              </li>
+              </li>}
               <li>
                 <Link
                   to="/product-management"
@@ -44,7 +44,7 @@ class SidebarComp extends React.Component {
                   <span>Pack Product</span>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   to="/custom-product-management"
                   style={{ textDecoration: "none" }}
@@ -52,8 +52,8 @@ class SidebarComp extends React.Component {
                   <span className="ti-folder"></span>
                   <span>Custom Product</span>
                 </Link>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <Link
                   to="/custom-order"
                   style={{ textDecoration: "none" }}
@@ -61,25 +61,25 @@ class SidebarComp extends React.Component {
                   <span className="ti-shopping-cart"></span>
                   <span>Custom Order</span>
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link to="/transactions" style={{ textDecoration: "none" }}>
                   <span className="ti-credit-card"></span>
                   <span>Transactions</span>
                 </Link>
               </li>
-              <li>
+              {this.props.role === "admin" && <li>
                 <Link to="/sales-report" style={{ textDecoration: "none" }}>
                   <span className="ti-time"></span>
                   <span>Sales Report</span>
                 </Link>
-              </li>
-              <li>
+              </li>}
+              {this.props.role === "admin" && <li>
                 <Link to="/revenue-report" style={{ textDecoration: "none" }}>
                   <span className="ti-book"></span>
                   <span>Revenue</span>
                 </Link>
-              </li>
+              </li>}
               <li>
                 <Link to="/list-users" style={{ textDecoration: "none" }}>
                   <span className="ti-clipboard"></span>
@@ -121,4 +121,9 @@ class SidebarComp extends React.Component {
   }
 }
 
-export default connect(null, { authLogout })(SidebarComp);
+const mapStateToProps = ({ authReducer }) => {
+  return {
+      ...authReducer
+  }
+}
+export default connect(mapStateToProps, { authLogout })(SidebarComp);
