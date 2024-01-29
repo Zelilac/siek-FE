@@ -25,26 +25,15 @@ class DialogProduct extends React.Component {
         }
 
         this.category = [
-            { name: 'Covid', id: 1 },
-            { name: 'Mata', id: 2 },
-            { name: 'Flu dan Batuk', id: 3 },
-            { name: 'Vitamin dan Suplemen', id: 4 },
-            { name: 'Demam', id: 5 },
-            { name: 'Pencernaan', id: 6 },
-            { name: 'Hipertensi', id: 7 },
-            { name: 'Otot, tulang dan sendi', id: 8 },
-            { name: 'Kulit', id: 9 },
-            { name: 'P3K', id: 10 }
+            { name: 'Seragam', id: 1 },
+            { name: 'Alat Tulis', id: 2 },
+            { name: 'Buku Cetak', id: 3 },
+            { name: 'Olahraga', id: 4 },
         ];
 
         this.unit = [
-            { name: 'ml' },
-            { name: 'L' },
-            { name: 'mg' },
-            { name: 'g' },
+            { name: 'pcs' },
             { name: 'lembar' },
-            { name: 'tablet' },
-            { name: 'kapsul' },
             { name: 'roll' },
             { name: 'botol' }
         ]
@@ -60,10 +49,10 @@ class DialogProduct extends React.Component {
     }
     saveChanges = async () => {
         try {
-            let { idproduct, product_name, brand, stock, price, description, usage, dosage, indication, effect, pack_price, netto } = this.props.productDetail
+            let { idproduct, product_name, brand, stock, price, description, pack_price, netto } = this.props.productDetail
             let { category, selectedUnit } = this.props
             // console.log('selected unit', selectedUnit.name)
-            let checkField = [product_name, brand, stock, price, description, usage, dosage, indication, effect]
+            let checkField = [product_name, brand, stock, price, description]
             if (checkField.indexOf("") > -1) {
                 this.setState({ error: true })
                 setTimeout(() => {
@@ -76,7 +65,7 @@ class DialogProduct extends React.Component {
                 // let idcategory = this.category[index].id
                 let unit = selectedUnit.name
                 let idcategory = category.id
-                let data = { idproduct, product_name, brand, idcategory, stock, description, usage, dosage, indication, effect, netto, pack_price, unit }
+                let data = { idproduct, product_name, brand, idcategory, stock, description, netto, pack_price, unit }
                 formData.append('data', JSON.stringify(data))
                 formData.append('products', this.state.fileUpload)
 
@@ -164,7 +153,7 @@ class DialogProduct extends React.Component {
                         <InputTextarea value={productDetail.description} onChange={(e) => inputChange(e, 'description')} autoResize style={{ border: productDetail.description === "" ? '1px solid red' : null }} />
                         {productDetail.description === "" ? <small className="p-error">Required.</small> : null}
                     </div>
-                    <div className="w-100 my-2">
+                    {/* <div className="w-100 my-2">
                         <label style={{ fontWeight: 'bold' }}>Usage</label>
                         <InputTextarea value={productDetail.usage} onChange={(e) => inputChange(e, 'usage')} style={{ border: productDetail.usage === "" ? '1px solid red' : null }} />
                         {productDetail.usage === "" ? <small className="p-error">Required.</small> : null}
@@ -179,7 +168,7 @@ class DialogProduct extends React.Component {
                         <label htmlFor="minmax-buttons" style={{ fontWeight: 'bold' }}>Indication</label>
                         <InputTextarea value={productDetail.indication} onChange={(e) => inputChange(e, 'indication')} autoResize style={{ border: productDetail.indication === "" ? '1px solid red' : null }} />
                         {productDetail.indication === "" ? <small className="p-error">Required.</small> : null}
-                    </div>
+                    </div> */}
                     {this.state.error && <Message severity="error" text="Fill all the form!" />}
                 </div>
             </Dialog>

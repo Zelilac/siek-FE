@@ -32,29 +32,18 @@ class ProductManagementPage extends React.Component {
       selectedCategory: {},
     };
     this.category = [
-      { name: "Covid", id: 1 },
-      { name: "Mata", id: 2 },
-      { name: "Flu dan Batuk", id: 3 },
-      { name: "Vitamin dan Suplemen", id: 4 },
-      { name: "Demam", id: 5 },
-      { name: "Pencernaan", id: 6 },
-      { name: "Hipertensi", id: 7 },
-      { name: "Otot, tulang dan sendi", id: 8 },
-      { name: "Kulit", id: 9 },
-      { name: "P3K", id: 10 },
-    ];
+      { name: 'Seragam', id: 1 },
+      { name: 'Alat Tulis', id: 2 },
+      { name: 'Buku Cetak', id: 3 },
+      { name: 'Olahraga', id: 4 },
+  ];
 
     this.unit = [
-      { name: "ml" },
-      { name: "L" },
-      { name: "mg" },
-      { name: "g" },
-      { name: "lembar" },
-      { name: "tablet" },
-      { name: "kapsul" },
-      { name: "roll" },
-      { name: "botol" },
-    ];
+      { name: 'pcs' },
+      { name: 'lembar' },
+      { name: 'roll' },
+      { name: 'botol' }
+  ]
   }
 
   componentDidMount() {
@@ -319,7 +308,7 @@ class ProductManagementPage extends React.Component {
             rowSpan={2}
             style={{ textAlign: "center" }}
           />
-          <Column
+          {/* <Column
             header="Side Effect"
             rowSpan={2}
             style={{ textAlign: "center" }}
@@ -330,7 +319,7 @@ class ProductManagementPage extends React.Component {
             header="Indication"
             rowSpan={2}
             style={{ textAlign: "center" }}
-          />
+          /> */}
           <Column header="Action" rowSpan={2} style={{ textAlign: "center" }} />
         </Row>
         <Row>
@@ -396,7 +385,7 @@ class ProductManagementPage extends React.Component {
                   body={this.bodyDescription}
                   headerStyle={{ width: "500px" }}
                 ></Column>
-                <Column
+                {/* <Column
                   body={this.bodyEffect}
                   headerStyle={{ width: "300px" }}
                 ></Column>
@@ -407,7 +396,7 @@ class ProductManagementPage extends React.Component {
                 <Column
                   body={this.bodyDosage}
                   headerStyle={{ width: "250px" }}
-                ></Column>
+                ></Column> */}
                 <Column
                   body={this.actionBodyTemplate}
                   headerStyle={{ width: "150px" }}

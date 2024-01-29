@@ -36,26 +36,15 @@ class DialogAddCustom extends React.Component {
         }
 
         this.category = [
-            { name: 'Covid', id: 1 },
-            { name: 'Mata', id: 2 },
-            { name: 'Flu dan Batuk', id: 3 },
-            { name: 'Vitamin dan Suplemen', id: 4 },
-            { name: 'Demam', id: 5 },
-            { name: 'Pencernaan', id: 6 },
-            { name: 'Hipertensi', id: 7 },
-            { name: 'Otot, tulang dan sendi', id: 8 },
-            { name: 'Kulit', id: 9 },
-            { name: 'P3K', id: 10 }
+            { name: 'Seragam', id: 1 },
+            { name: 'Alat Tulis', id: 2 },
+            { name: 'Buku Cetak', id: 3 },
+            { name: 'Olahraga', id: 4 },
         ];
 
         this.unit = [
-            { name: 'ml' },
-            { name: 'L' },
-            { name: 'mg' },
-            { name: 'g' },
+            { name: 'pcs' },
             { name: 'lembar' },
-            { name: 'tablet' },
-            { name: 'kapsul' },
             { name: 'roll' },
             { name: 'botol' }
         ]
@@ -63,8 +52,8 @@ class DialogAddCustom extends React.Component {
 
     onBtnAdd = async () => {
         try {
-            let { productName, brand, description, usage, dosage, effect, price, qty, netto, indication, stock, selectedCategory, selectedUnit, fileUpload } = this.state
-            let a = [productName, brand, description, usage, dosage, effect, indication, price, qty, netto, selectedUnit, selectedCategory, fileUpload].indexOf("")
+            let { productName, brand, description, price, qty, netto, stock, selectedCategory, selectedUnit, fileUpload } = this.state
+            let a = [productName, brand, description, price, qty, netto, selectedUnit, selectedCategory, fileUpload].indexOf("")
             let b = [price, qty, netto].indexOf(0)
             if (a >= 0 || b >= 0) {
                 this.setState({ error: true })
@@ -79,7 +68,7 @@ class DialogAddCustom extends React.Component {
             stock = [{ idtype: 2, qty, total_netto, idstatus: 1 }]
             // this.setState({ stock })
 
-            let data = { product_name: productName, brand, idcategory: selectedCategory.id, description, effect, usage, dosage, indication, netto, pack_price: price, unit: selectedUnit.name, stock }
+            let data = { product_name: productName, brand, idcategory: selectedCategory.id, description, netto, pack_price: price, unit: selectedUnit.name, stock }
             formData.append('data', JSON.stringify(data))
             formData.append('products', fileUpload)
 
@@ -184,7 +173,7 @@ class DialogAddCustom extends React.Component {
                         <InputTextarea autoResize onChange={(e) => this.setState({ description: e.target.value })} />
                         {!description && <small className="p-error">Required.</small>}
                     </div>
-                    <div className="w-100 my-2">
+                    {/* <div className="w-100 my-2">
                         <label style={{ fontWeight: 'bold' }}>Usage</label>
                         <InputTextarea onChange={(e) => this.setState({ usage: e.target.value })} />
                         {!usage && <small className="p-error">Required.</small>}
@@ -203,7 +192,7 @@ class DialogAddCustom extends React.Component {
                         <label htmlFor="minmax-buttons" style={{ fontWeight: 'bold' }}>Indication</label>
                         <InputTextarea autoResize onChange={(e) => this.setState({ indication: e.target.value })} />
                         {!indication && <small className="p-error">Required.</small>}
-                    </div>
+                    </div> */}
                     {error && <Message severity="error" text="Fill all the form!" />}
                 </div>
             </Dialog>

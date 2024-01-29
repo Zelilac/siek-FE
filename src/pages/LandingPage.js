@@ -341,7 +341,7 @@ class LandingPage extends React.Component {
           <Row>
             <Col md="7" className="m-auto">
               <h4 className="text-center mt-5 " style={{ fontWeight: "bold" }}>
-                Browse medicines & health products
+                Browse school products
               </h4>
               <Container
                 style={{
