@@ -258,6 +258,16 @@ class ProductDetailPage extends React.Component {
                   <p style={{ color: "#75BDF6", fontWeight: "900" }}>
                     {this.state.detail.brand}
                   </p>
+                  {/* <hr />
+                  <h5>Manufacturer</h5>
+                  <p style={{ color: "#75BDF6", fontWeight: "900" }}>
+                    {this.state.detail.brand}
+                  </p>
+                  <hr />
+                  <h5>Manufacturer</h5>
+                  <p style={{ color: "#75BDF6", fontWeight: "900" }}>
+                    {this.state.detail.brand}
+                  </p> */}
                   <hr />
                   <Accordion activeIndex={this.state.activeIndex} onTabChange={(e) => this.setState({ activeIndex: e.index })} style={{ width: '99%' }}>
                     <AccordionTab header={<React.Fragment><span style={{ fontWeight: 'bold', fontSize: '20px' }}>Product Reviews</span></React.Fragment>}>

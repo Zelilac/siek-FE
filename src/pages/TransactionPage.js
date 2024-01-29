@@ -13,19 +13,21 @@ import {
   Alert,
   Modal,
   ModalBody,
-  ModalHeader,Collapse,
-  Form,Pagination,PaginationItem,PaginationLink
+  ModalHeader, Collapse,
+  Form, Pagination, PaginationItem, PaginationLink
 } from "reactstrap";
 import HTTP from "../service/HTTP.js";
 import Upload from "../assets/images/bg-upload.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCamera,faExclamationCircle,faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import { faCamera, faExclamationCircle, faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import "../assets/css/TransactionPage.css";
 import { URL_API } from "../Helper";
 import axios from "axios";
 import { connect } from "react-redux";
 import { TabMenu } from 'primereact/tabmenu';
 import { Rating } from 'primereact/rating';
+import { Toast } from "primereact/toast";
+import cloneDeep from 'lodash/cloneDeep';
 
 class TransactionPage extends React.Component {
   constructor(props) {
@@ -36,6 +38,7 @@ class TransactionPage extends React.Component {
       modalUpload: false,
       modalPayment: false,
       detailTransactions: [],
+      itemTransactions: [],
       file: Upload,
       fileUpload: null,
       alertMessage: "",
@@ -52,24 +55,38 @@ class TransactionPage extends React.Component {
     this.handleChange = this.handleChange.bind(this);
 
     this.items = [
-      { label: 'Request', icon: 'pi pi-fw pi-question', status: 4 },
-      { label: 'Accept', icon: 'pi pi-fw pi-question', status: 6 },
-      { label: 'Waiting Confirmation', icon: 'pi pi-fw pi-inbox', status: 5 },
-      { label: 'On Progress', icon: 'pi pi-fw pi-spinner', status: 1 },
-      { label: 'Done', icon: 'pi pi-fw pi-check', status: 2 },
-      { label: 'Reject', icon: 'pi pi-fw pi-times', status: 3 }
+      { label: 'Waiting For Payment', icon: 'pi pi-fw pi-image', status: 1 },
+      { label: 'Pending Confirmation', icon: 'pi pi-fw pi-check-circle', status: 2 },
+      { label: 'Waiting For Shipping', icon: 'pi pi-fw pi-inbox', status: 3 },
+      { label: 'Shipped', icon: 'pi pi-fw pi-send', status: 4 },
+      { label: 'Delivered', icon: 'pi pi-fw pi-check', status: 5 },
+      { label: 'Done', icon: 'pi pi-fw pi-book', status: 6 },
+      { label: 'Rejected', icon: 'pi pi-fw pi-times', status: 7 }
     ];
+
+    this.statusName = {
+      "request": "Waiting For Payment",
+      "pending_confirmation": "Pending Confirmation",
+      "waiting_shipping": "Waiting For Shipping",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "done": "Accepted",
+      "reject": "Rejected"
+    }
   }
 
   componentDidMount() {
-    this.getTransactionHistory(4);
+    this.getTransactionHistory(this.state.activeIndex + 1);
   }
 
   getDetailTransactions = async (idtransaction) => {
     try {
-      let res = await HTTP.get(`/user/detail-transactions/${idtransaction}`)
-      this.setState({ detailTransactions: res.data })
-      console.log("detail trans", res.data)
+      let res = await HTTP.get(`/user/detail-transactions/${idtransaction}`).then((res) => {
+        console.log(res.data, "res.data")
+        this.setState({
+          detailTransactions: res.data,
+        });
+      })
     } catch (error) {
       console.log(error)
     }
@@ -82,6 +99,19 @@ class TransactionPage extends React.Component {
     //   .catch((err) => {
     //     console.log(err);
     //   });
+  };
+
+  getItemTransactions = async (idtransaction) => {
+    try {
+      let res = await HTTP.get(`/user/item-transactions/${idtransaction}`).then((res) => {
+        console.log(res.data, "res.data")
+        this.setState({
+          itemTransactions: res.data,
+        });
+      })
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   handleClick = (event) => {
@@ -108,26 +138,56 @@ class TransactionPage extends React.Component {
     }
   }
 
-  onProductReviewChange = (rating, idproduct, index, idtransaction) => {
-    console.log(rating, idproduct, idtransaction)
-    this.state.productReview[index]= { idproduct, rating, idtransaction }
-    this.setState({ productReview: this.state.productReview }, () => console.log("after", this.state.productReview))
+  onProductReviewChange = (rating, idproduct, index, idtransaction, id) => {
+    let productReview = cloneDeep(this.state.productReview)
+    productReview[index] = { idproduct, rating, idtransaction, id, ...productReview[index] }
+    this.setState({ productReview: productReview })
   }
 
   onInputChange = (review, index) => {
-    this.state.productReview[index] = {...this.state.productReview[index], review}
-    this.setState({ productReview: this.state.productReview }, () => console.log("after IC", this.state.productReview))
+    let productReview = cloneDeep(this.state.productReview)
+    productReview[index] = { ...productReview[index], review }
+    this.setState({ productReview: productReview })
   }
 
-  onBtnSubmitReview = async () =>{
+  onBtnSubmitReview = async () => {
     try {
       await HTTP.post('/product/review', this.state.productReview)
-      this.getTransactionHistory()
-      this.setState({modal: !this.state.modal})
+      this.getTransactionHistory(this.state.activeIndex + 1)
+      this.setState({ modal: !this.state.modal })
     } catch (error) {
       console.log(error)
     }
   }
+
+  onBtnItemDelivered = async (id) => {
+    try {
+      await HTTP.patch(`/transaction/delivered/${id}`)
+      this.toast.show({
+        severity: "success",
+        summary: "Success!",
+        life: 3000,
+      })
+      this.getTransactionHistory(this.state.activeIndex + 1)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  onBtnItemFinished = async (id) => {
+    try {
+      await HTTP.patch(`/transaction/finished/${id}`)
+      this.toast.show({
+        severity: "success",
+        summary: "Success!",
+        life: 3000,
+      })
+      this.getTransactionHistory(this.state.activeIndex + 1)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   printModal = (modalType) => {
     if (modalType === 'detail') {
       return (
@@ -147,7 +207,7 @@ class TransactionPage extends React.Component {
                       X
                     </Button>
                   </div>
-                  <hr style={{border: "2px solid rgba(34, 129, 133, 1)"}} className="mt-3"/>
+                  <hr style={{ border: "2px solid rgba(34, 129, 133, 1)" }} className="mt-3" />
                   {this.state.detailTransactions.slice(0, 1).map((item, idx) => {
                     return (
                       <>
@@ -177,75 +237,75 @@ class TransactionPage extends React.Component {
                   <Col md="6"></Col>
                 </Row>
               </Container>
-              <hr style={{border: "2px solid rgba(34, 129, 133, 1)"}}/>
+              <hr style={{ border: "2px solid rgba(34, 129, 133, 1)" }} />
               <Container>
                 <Row>
                   {this.state.detailTransactions.map((item, idx) => {
                     return (
                       <>
-                      {item.idtype === 1 && item.iduser ? (<><Col md="4">
+                        {item.idtype === 1 && item.iduser ? (<><Col md="4">
                           <img src={
                             item.image_url.includes("http")
                               ? `${item.image_url}`
-                              
+
                               : `${URL_API}/${item.image_url}`
-                          } width="100%" alt="user-image"/>
+                          } width="100%" alt="user-image" />
                         </Col>
-                        <Col md="8 mt-3">
-                          <p>
-                            <strong>{item.product_name}</strong>
-                            <br />
-                            {item.brand}
-                          </p>
-                          <p>
-                            Rp.{item.pack_price.toLocaleString()} X {item.qty_buy}
-                          </p>
-                        </Col>
-                        </>):(<>
-                          
+                          <Col md="8 mt-3">
+                            <p>
+                              <strong>{item.product_name}</strong>
+                              <br />
+                              {item.brand}
+                            </p>
+                            <p>
+                              Rp.{item.pack_prices ? item.pack_prices.toLocaleString() : "0".toLocaleString()} X {item.qty_buy}
+                            </p>
+                          </Col>
+                        </>) : (<>
+
                           {item.img_order_url && !item.image_url ? (<><Col md="12"><h6>Image Perscription</h6><img src={
-                          item.img_order_url.includes("http")
-                            ? `${item.img_order_url}`
-                            
-                            : `${URL_API}/${item.img_order_url}`
-                        } width="100%" alt="img-perscription"/></Col></>):(<><Col md="4"><img src={
-                          item.image_url.includes("http")
-                            ? `${item.image_url}`
-                            
-                            : `${URL_API}/${item.image_url}`
-                        } width="100%" alt="img-perscription"/></Col></>)}
-                          
-                        
-                        {item.unit_price || item.product_name || item.brand ? 
-                        (<><Col md="8 mt-3">
-                        <p>
-                          <strong>{item.product_name}</strong>
-                          <br />
-                          {item.brand}
-                        </p>
-                        <p>
-                          netto : Rp.{item.unit_price.toLocaleString()}/{item.unit} X {item.qty_buy_total_netto}
-                        </p>
-                      </Col></>):
-                        (<></>)}
-                        </>)}  
+                            item.img_order_url.includes("http")
+                              ? `${item.img_order_url}`
+
+                              : `${URL_API}/${item.img_order_url}`
+                          } width="100%" alt="img-perscription" /></Col></>) : (<><Col md="4"><img src={
+                            item.image_url.includes("http")
+                              ? `${item.image_url}`
+
+                              : `${URL_API}/${item.image_url}`
+                          } width="100%" alt="img-perscription" /></Col></>)}
+
+
+                          {item.unit_price || item.product_name || item.brand ?
+                            (<><Col md="8 mt-3">
+                              <p>
+                                <strong>{item.product_name}</strong>
+                                <br />
+                                {item.brand}
+                              </p>
+                              <p>
+                                netto : Rp.{item.unit_price.toLocaleString()}/{item.unit} X {item.qty_buy_total_netto}
+                              </p>
+                            </Col></>) :
+                            (<></>)}
+                        </>)}
                       </>
                     );
                   })}
                 </Row>
               </Container>
               <Container>
-              <hr style={{border: "2px solid rgba(34, 129, 133, 1)"}}/>
-                <Row style={{lineHeight:"4px"}}>
+                <hr style={{ border: "2px solid rgba(34, 129, 133, 1)" }} />
+                <Row style={{ lineHeight: "4px" }}>
                   {this.state.detailTransactions.splice(0, 1).map((item, idx) => {
                     return (
                       <>
-                      {item.shipping_cost || item.total_price ? 
-                      (<><Col md="4"><strong>Shipping Cost</strong></Col>
-                      <Col md="8"><p> Rp.{item.shipping_cost.toLocaleString()}</p></Col>
-                      <Col md="4"><strong>Total</strong></Col>
-                      <Col md="8"><p> Rp.{item.total_price.toLocaleString()}</p></Col></>):
-                      (<><center><p><i>Please Wait Admin Accept Your Custom Order.</i></p></center></>)}
+                        {item.shipping_cost || item.total_price ?
+                          (<><Col md="4"><strong>Shipping Cost</strong></Col>
+                            <Col md="8"><p> Rp.{item.shipping_cost.toLocaleString()}</p></Col>
+                            <Col md="4"><strong>Total</strong></Col>
+                            <Col md="8"><p> Rp.{item.total_price.toLocaleString()}</p></Col></>) :
+                          (<><center><p><i>Please Wait Admin Accept Your Custom Order.</i></p></center></>)}
                       </>
                     );
                   })}
@@ -259,10 +319,8 @@ class TransactionPage extends React.Component {
       return (
         <Modal isOpen={this.state.modal} toggle={() => this.setState({ modal: !this.state.modal })}>
           <ModalHeader>Review</ModalHeader>
-
           <Container className="p-3">
-            {this.state.detailTransactions.map((item, idx) => {
-
+            {this.state.itemTransactions.map((item, idx) => {
               return (
                 <>
                   {/* <img src={item.image_url} height="30%" /> */}
@@ -270,12 +328,12 @@ class TransactionPage extends React.Component {
                   <br />
                   <div className="d-flex">
                     <span>Rating : </span>
-                    <Rating value={this.state.productReview[idx] && this.state.productReview[idx].rating} onChange={(e) => this.onProductReviewChange(e.value, item.idproduct, idx, item.idtransaction)} className="mx-1" />
+                    <Rating value={this.state.productReview[idx] && this.state.productReview[idx].rating} onChange={(e) => this.onProductReviewChange(e.value, item.idproduct, idx, item.idtransaction, item.id)} className="mx-1" />
                   </div>
                   <Form>
                     <FormGroup>
                       <Label>Review :</Label>
-                      <Input value={this.state.productReview[idx] && this.state.productReview[idx].review} onChange={(e) => this.onInputChange(e.target.value, idx)}/>
+                      <Input value={this.state.productReview[idx] && this.state.productReview[idx].review} onChange={(e) => this.onInputChange(e.target.value, idx)} />
                     </FormGroup>
                   </Form>
                   <br />
@@ -353,7 +411,7 @@ class TransactionPage extends React.Component {
               alertUpload: !this.state.alertUpload,
             });
           }, 3000);
-          this.getTransactionHistory();
+          this.getTransactionHistory(this.state.activeIndex + 1);
         })
         .catch((err) => {
           console.log(err);
@@ -380,138 +438,138 @@ class TransactionPage extends React.Component {
           </div>
 
           <ModalBody className="body-upload">
-          <Container className="mt-1">
-            <Row>
+            <Container className="mt-1">
+              <Row>
                 <center>
-                <Col md="12"><h6>Complete your payment</h6></Col>
-                <Col md="5 mt-3" style={{border:`3px solid #76B3B4`}}>
+                  <Col md="12"><h6>Complete your payment</h6></Col>
+                  <Col md="5 mt-3" style={{ border: `3px solid #76B3B4` }}>
                     <center>
-                    {/* <h3>Rp {this.props.location.state.total_price}</h3> */}
-                    {this.state.detailTransactions.splice(0,1).map((item,idx)=>{
-                      return (<><h3>Rp {item.total_price.toLocaleString()}</h3></>)
-                    })}
+                      {/* <h3>Rp {this.props.location.state.total_price}</h3> */}
+                      {this.state.detailTransactions.splice(0, 1).map((item, idx) => {
+                        return (<><h3>Rp {item.total_price.toLocaleString()}</h3></>)
+                      })}
                     </center>
-                </Col>
+                  </Col>
                 </center>
-                    <center>
-                <Col md="12 mt-5 p-3" style={{border:`1px solid #ccc`,borderRadius:"15px"}}>
+                <center>
+                  <Col md="12 mt-5 p-3" style={{ border: `1px solid #ccc`, borderRadius: "15px" }}>
                     {/* <hr style={{border: "2px solid rgba(34, 129, 133, 1)"}} className="mt-3"/> */}
                     <div className="d-flex justify-content-between align-items-center">
-                    <img src="https://infobanknews.com/wp-content/uploads/2018/05/logo-BNI-46-1.png" width="20%" alt="bank-logo"/>
-                    <h6>BNI Virtual Account</h6>
+                      <img src="https://infobanknews.com/wp-content/uploads/2018/05/logo-BNI-46-1.png" width="20%" alt="bank-logo" />
+                      <h6>BNI Virtual Account</h6>
                     </div>
-                    <hr style={{border: "2px solid rgba(34, 129, 133, 1)"}} className="mt-3"/>
+                    <hr style={{ border: "2px solid rgba(34, 129, 133, 1)" }} className="mt-3" />
                     <div className="d-flex justify-content-between align-items-center">
-                    {this.props.phone_number !== "" ? (<><h6>827{this.props.phone_number}</h6></>):(<><h6>827938216555</h6></>)}
-                    <h6>Virtual Account Number</h6>
+                      {this.props.phone_number !== "" ? (<><h6>827{this.props.phone_number}</h6></>) : (<><h6>827938216555</h6></>)}
+                      <h6>Virtual Account Number</h6>
                     </div>
-                </Col>
-                <div className="btn-getstarted mt-4">
-                </div>
-                    </center>
-                    <center>
-                <Col md="12">
-                    <div style={{textAlign:"left"}}>
-                    <h5 className="mt-5">Payment Guide</h5>
-                    <div className="d-flex justify-content-between mt-3">
-                    <a  onClick={()=>{this.setState({collapse:!this.state.collapse})}} style={{cursor:"pointer"}}>ATM BNI</a>
-                    <a onClick={()=>{this.setState({collapse:!this.state.collapse})}} style={{cursor:"pointer"}}><FontAwesomeIcon icon={faAngleDown} /></a>
-                    </div>
-                    <Collapse
-                    isOpen={this.state.collapse}
-                    // onEntering={onEntering}
-                    // onEntered={onEntered}
-                    // onExiting={onExiting}
-                    // onExited={onExited}
-                    >
-                    <p style={{color:"#A6A6A6"}}> 1. Insert your Card.<br/>
-                        2. Select a language.<br/>
-                        3. Enter your ATM PIN.<br/>
-                        4. Select "More Menu".<br/>
-                        5. Select "Transfers".<br/>
-                        6. Select the type of account you will use (Example: "From a Savings Account").<br/>
-                        7. Select "Virtual Account Billing".<br/>
-                        8. Enter your Virtual Account number.<br/>
-                        9. The bill to be paid will appear on the confirmation screen.<br/>
-                        10. Confirm, if it is appropriate, continue the transaction.<br/>
-                        11. The transaction has been completed.</p>
-                        </Collapse>
-                        </div>
-
-                        <div>
-                        <div className="d-flex justify-content-between mt-3">
-                        <a  onClick={()=>{this.setState({collapse1:!this.state.collapse1})}} style={{cursor:"pointer"}}>Mobile Banking BNI</a>
-                        <a onClick={()=>{this.setState({collapse1:!this.state.collapse1})}} style={{cursor:"pointer"}}><FontAwesomeIcon icon={faAngleDown} /></a>
-                        </div>
-                        <Collapse
-                        isOpen={this.state.collapse1}
-                        // onEntering={onEntering}
-                        // onEntered={onEntered}
-                        // onExiting={onExiting}
-                        // onExited={onExited}
-                        >
-                        <p style={{color:"#A6A6A6",textAlign:"left"}}> 
-                        1. Access BNI Mobile Banking from your cellphone then enter your user ID and password.<br/>
-                        2. Select the "Transfer" menu.<br/>
-                        3. Select the "Virtual Account Billing" menu then select a debit account.<br/>
-                        4. Enter your Virtual Account number in the "new input" menu.<br/>
-                        5. The bill to be paid will appear on the confirmation screen.<br/>
-                        6. Confirm the transaction and enter the Transaction Password.<br/>
-                        7. Your Payment Has Been Successful</p>
-                        </Collapse>
-                        </div>
-
-                        <div>
-                        <div className="d-flex justify-content-between mt-3">
-                        <a  onClick={()=>{this.setState({collapse2:!this.state.collapse2})}} style={{cursor:"pointer"}}>SMS Banking BNI</a>
-                        <a onClick={()=>{this.setState({collapse2:!this.state.collapse2})}} style={{cursor:"pointer"}}><FontAwesomeIcon icon={faAngleDown} /></a>
-                        </div>
-                        <Collapse
-                        isOpen={this.state.collapse2}
-                        // onEntering={onEntering}
-                        // onEntered={onEntered}
-                        // onExiting={onExiting}
-                        // onExited={onExited}
-                        >
-                        <p style={{color:"#A6A6A6",textAlign:"left"}}> 
-                        1. Open the BNI SMS Banking application<br/>
-                        2. Select the Transfer menu<br/>
-                        3. Select the BNI account Trf menu<br/>
-                        4. Enter the destination account number with a 16-digit Virtual Account Number.<br/>
-                        5. Enter the transfer amount according to your bill or obligation. Different denominations cannot be processed.<br/>
-                        6. Select "Process" then "Agree"<br/>
-                        7. Reply sms by typing the pin according to the command<br/>
-                        8. Transaction Successful</p>
-                        </Collapse>
-                        </div>
-
-                        <div className="mb-5">
-                        <div className="d-flex justify-content-between mt-3">
-                        <a  onClick={()=>{this.setState({collapse3:!this.state.collapse3})}} style={{cursor:"pointer"}}>Transfer from other bank</a>
-                        <a onClick={()=>{this.setState({collapse3:!this.state.collapse3})}} style={{cursor:"pointer"}}><FontAwesomeIcon icon={faAngleDown} /></a>
-                        </div>
-                        <Collapse
-                        isOpen={this.state.collapse3}
-                        // onEntering={onEntering}
-                        // onEntered={onEntered}
-                        // onExiting={onExiting}
-                        // onExited={onExited}
-                        >
-                        <p style={{color:"#A6A6A6",textAlign:"left"}}> 
-                        1. Select the "Interbank transfer" or "Interbank online transfer" menu.<br/>
-                        2. Enter the BNI bank code (009) or select the destination bank, namely BNI.<br/>
-                        3. Enter the 16 Digit Virtual Account Number in the destination account field.<br/>
-                        4. Enter the transfer amount according to your bill or obligation. Different denominations cannot be processed.<br/>
-                        5. Enter the payment amount: .
-                        6. Confirmation of your details will appear on the screen, check and if it is appropriate please continue the transaction until it is complete.<br/>
-                        7. Transaction Successful.</p>
-                        </Collapse>
-                        </div>
-                </Col>
+                  </Col>
+                  <div className="btn-getstarted mt-4">
+                  </div>
                 </center>
-            </Row>
-        </Container>          
-        </ModalBody>
+                <center>
+                  <Col md="12">
+                    <div style={{ textAlign: "left" }}>
+                      <h5 className="mt-5">Payment Guide</h5>
+                      <div className="d-flex justify-content-between mt-3">
+                        <a onClick={() => { this.setState({ collapse: !this.state.collapse }) }} style={{ cursor: "pointer" }}>ATM BNI</a>
+                        <a onClick={() => { this.setState({ collapse: !this.state.collapse }) }} style={{ cursor: "pointer" }}><FontAwesomeIcon icon={faAngleDown} /></a>
+                      </div>
+                      <Collapse
+                        isOpen={this.state.collapse}
+                      // onEntering={onEntering}
+                      // onEntered={onEntered}
+                      // onExiting={onExiting}
+                      // onExited={onExited}
+                      >
+                        <p style={{ color: "#A6A6A6" }}> 1. Insert your Card.<br />
+                          2. Select a language.<br />
+                          3. Enter your ATM PIN.<br />
+                          4. Select "More Menu".<br />
+                          5. Select "Transfers".<br />
+                          6. Select the type of account you will use (Example: "From a Savings Account").<br />
+                          7. Select "Virtual Account Billing".<br />
+                          8. Enter your Virtual Account number.<br />
+                          9. The bill to be paid will appear on the confirmation screen.<br />
+                          10. Confirm, if it is appropriate, continue the transaction.<br />
+                          11. The transaction has been completed.</p>
+                      </Collapse>
+                    </div>
+
+                    <div>
+                      <div className="d-flex justify-content-between mt-3">
+                        <a onClick={() => { this.setState({ collapse1: !this.state.collapse1 }) }} style={{ cursor: "pointer" }}>Mobile Banking BNI</a>
+                        <a onClick={() => { this.setState({ collapse1: !this.state.collapse1 }) }} style={{ cursor: "pointer" }}><FontAwesomeIcon icon={faAngleDown} /></a>
+                      </div>
+                      <Collapse
+                        isOpen={this.state.collapse1}
+                      // onEntering={onEntering}
+                      // onEntered={onEntered}
+                      // onExiting={onExiting}
+                      // onExited={onExited}
+                      >
+                        <p style={{ color: "#A6A6A6", textAlign: "left" }}>
+                          1. Access BNI Mobile Banking from your cellphone then enter your user ID and password.<br />
+                          2. Select the "Transfer" menu.<br />
+                          3. Select the "Virtual Account Billing" menu then select a debit account.<br />
+                          4. Enter your Virtual Account number in the "new input" menu.<br />
+                          5. The bill to be paid will appear on the confirmation screen.<br />
+                          6. Confirm the transaction and enter the Transaction Password.<br />
+                          7. Your Payment Has Been Successful</p>
+                      </Collapse>
+                    </div>
+
+                    <div>
+                      <div className="d-flex justify-content-between mt-3">
+                        <a onClick={() => { this.setState({ collapse2: !this.state.collapse2 }) }} style={{ cursor: "pointer" }}>SMS Banking BNI</a>
+                        <a onClick={() => { this.setState({ collapse2: !this.state.collapse2 }) }} style={{ cursor: "pointer" }}><FontAwesomeIcon icon={faAngleDown} /></a>
+                      </div>
+                      <Collapse
+                        isOpen={this.state.collapse2}
+                      // onEntering={onEntering}
+                      // onEntered={onEntered}
+                      // onExiting={onExiting}
+                      // onExited={onExited}
+                      >
+                        <p style={{ color: "#A6A6A6", textAlign: "left" }}>
+                          1. Open the BNI SMS Banking application<br />
+                          2. Select the Transfer menu<br />
+                          3. Select the BNI account Trf menu<br />
+                          4. Enter the destination account number with a 16-digit Virtual Account Number.<br />
+                          5. Enter the transfer amount according to your bill or obligation. Different denominations cannot be processed.<br />
+                          6. Select "Process" then "Agree"<br />
+                          7. Reply sms by typing the pin according to the command<br />
+                          8. Transaction Successful</p>
+                      </Collapse>
+                    </div>
+
+                    <div className="mb-5">
+                      <div className="d-flex justify-content-between mt-3">
+                        <a onClick={() => { this.setState({ collapse3: !this.state.collapse3 }) }} style={{ cursor: "pointer" }}>Transfer from other bank</a>
+                        <a onClick={() => { this.setState({ collapse3: !this.state.collapse3 }) }} style={{ cursor: "pointer" }}><FontAwesomeIcon icon={faAngleDown} /></a>
+                      </div>
+                      <Collapse
+                        isOpen={this.state.collapse3}
+                      // onEntering={onEntering}
+                      // onEntered={onEntered}
+                      // onExiting={onExiting}
+                      // onExited={onExited}
+                      >
+                        <p style={{ color: "#A6A6A6", textAlign: "left" }}>
+                          1. Select the "Interbank transfer" or "Interbank online transfer" menu.<br />
+                          2. Enter the BNI bank code (009) or select the destination bank, namely BNI.<br />
+                          3. Enter the 16 Digit Virtual Account Number in the destination account field.<br />
+                          4. Enter the transfer amount according to your bill or obligation. Different denominations cannot be processed.<br />
+                          5. Enter the payment amount: .
+                          6. Confirmation of your details will appear on the screen, check and if it is appropriate please continue the transaction until it is complete.<br />
+                          7. Transaction Successful.</p>
+                      </Collapse>
+                    </div>
+                  </Col>
+                </center>
+              </Row>
+            </Container>
+          </ModalBody>
         </Modal>
       </>
     );
@@ -619,11 +677,10 @@ class TransactionPage extends React.Component {
     ) {
       pageNumbers.push(i);
     }
-    console.log("waw", this.state.historyTransactions);
-    console.log("iduser", this.props.iduser);
     // console.log("detran", this.state.detailTransactions);
     return (
       <Col md="10 mt-5">
+        <Toast ref={(el) => (this.toast = el)} />
         {this.printModalUploadTransactions()}
         <Container style={{ height: '100vh' }}>
           {this.printModal(this.state.modalType)}
@@ -639,10 +696,10 @@ class TransactionPage extends React.Component {
             </Col>
             {
               this.state.historyTransactions.length > 0 ?
-              currentTodos.map((item) => {
+                currentTodos.map((item) => {
                   return (
                     <>
-                    {item.idtype === 1 && item.iduser === this.props.iduser ? (<><Col md="12">
+                      {item.idtype === 1 && item.iduser === this.props.iduser ? (<><Col md="12">
                         <Card
                           body
                           style={{
@@ -664,7 +721,7 @@ class TransactionPage extends React.Component {
                               </Col>
                               <Col md="2">
                                 <CardTitle tag="h6">Status</CardTitle>
-                                <CardText>{item.status_name}</CardText>
+                                <CardText>{this.statusName[item.status_name]}</CardText>
                               </Col>
                               <Col
                                 md="3"
@@ -684,7 +741,7 @@ class TransactionPage extends React.Component {
                                   Detail
                                 </Button>
                                 &nbsp; &nbsp;
-                                {item.status_name === "request"  && (
+                                {item.status_name === "request" && (
                                   <>
                                     <Button
                                       color="primary"
@@ -699,94 +756,102 @@ class TransactionPage extends React.Component {
                                     </Button>
                                   </>
                                 )}
-                                {item.status_name === "accept"  && (
+                                {item.status_name === "shipped" && (
                                   <>
                                     <Button
                                       color="primary"
                                       onClick={() => {
-                                        this.setState({
-                                          modalUpload: !this.state.modalUpload,
-                                          idtransaction: item.id,
-                                        });
+                                        this.onBtnItemDelivered(item.id)
                                       }}
                                     >
-                                      Upload
+                                      Item Accepted
                                     </Button>
                                   </>
                                 )}
+                                {
+                                  item.status_name === "delivered" && (
+                                    <Button
+                                      color="success"
+                                      onClick={() => {
+                                        this.onBtnItemFinished(item.id)
+                                      }}>
+                                      Finished
+                                    </Button>
+                                  )
+                                }
                                 {
                                   item.status_name === "done" && (
                                     <Button
                                       color="success"
                                       onClick={() => {
-                                        this.getDetailTransactions(item.id)
+                                        this.getItemTransactions(item.id)
                                         this.setState({ modal: !this.state.modal, modalType: 'review' })
                                       }}
                                       disabled={parseInt(item.review)}>
-                                        {
-                                          parseInt(item.review) ?
-                                          'Product Reviewed' :
-                                          'Review Product' 
-                                        }
+                                      {
+                                        parseInt(item.review) ?
+                                          'Reviewed' :
+                                          'Review'
+                                      }
                                     </Button>
                                   )
                                 }
                               </Col>
-                              <Col md="9 pt-3" style={{fontSize:"0.9em",color:"#ccc"}}><FontAwesomeIcon icon={faExclamationCircle} /> Your order will be processed after the proof of payment has been confirmed</Col>
+                              { item.status_name === "request" && <Col md="9 pt-3" style={{ fontSize: "0.9em", color: "#ccc" }}><FontAwesomeIcon icon={faExclamationCircle} /> Your order will be processed after the proof of payment has been confirmed</Col>}
                               <Col md="3 pl-5">{item.status_name === "request" && (<><a onClick={() => {
-                                  this.setState({ modalPayment: !this.state.modalPayment });
-                                  this.getDetailTransactions(item.id);
-                                }} style={{cursor:"pointer",fontSize:"0.9em"}}>How to pay ?</a></>)}</Col>   
+                                this.setState({ modalPayment: !this.state.modalPayment });
+                                this.getDetailTransactions(item.id);
+                              }} style={{ cursor: "pointer", fontSize: "0.9em" }}>How to pay ?</a></>)}</Col>
                             </Row>
                           </Container>
                         </Card>
                       </Col>
-                      </>):
-                      item.idtype === 2 && item.iduser === this.props.iduser &&(<><Col md="12">
-                      <Card
-                        body
-                        style={{
-                          borderRadius: "15px",
-                          boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
-                          marginTop: "1%",
-                          border: "none",
-                        }}
-                      >
-                        <Container>
-                          <Row>
-                            <Col md="4">
-                              <CardTitle tag="h6">Invoice</CardTitle>
-                              <CardText>{item.invoice}</CardText>
-                            </Col>
-                            <Col md="3">
-                              <CardTitle tag="h6">Order Type</CardTitle>
-                              <CardText>Custom</CardText>
-                            </Col>
-                            <Col md="2">
-                              <CardTitle tag="h6">Status</CardTitle>
-                              <CardText>{item.status_name}</CardText>
-                            </Col>
-                            <Col
-                              md="3"
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Button
-                                color="warning"
-                                onClick={() => {
-                                  this.setState({ modal: !this.state.modal, modalType: 'detail' });
-                                  this.getDetailTransactions(item.id);
-                                }}
-                              >
-                                Detail
-                              </Button>
-                              &nbsp; &nbsp;
-                              {item.status_name === "request" && (
-                                <>
-                                  {/* <Button
+                      </>) :
+                        item.idtype === 2 && item.iduser === this.props.iduser && (<><Col md="12">
+                          <Card
+                            body
+                            style={{
+                              borderRadius: "15px",
+                              boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+                              marginTop: "1%",
+                              border: "none",
+                            }}
+                          >
+                            <Container>
+                              <Row>
+                                <Col md="4">
+                                  <CardTitle tag="h6">Invoice</CardTitle>
+                                  <CardText>{item.invoice}</CardText>
+                                </Col>
+                                <Col md="3">
+                                  <CardTitle tag="h6">Order Type</CardTitle>
+                                  <CardText>Custom</CardText>
+                                </Col>
+                                <Col md="2">
+                                  <CardTitle tag="h6">Status</CardTitle>
+                                  <CardText>{item.status_name}</CardText>
+                                </Col>
+                                <Col
+                                  md="3"
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Button
+                                    color="warning"
+                                    onClick={() => {
+                                      this.setState({ modal: !this.state.modal, modalType: 'detail' });
+                                      this.getDetailTransactions(item.id);
+                                    }}
+                                  >
+                                    Detail
+                                  </Button>
+                                  &nbsp; &nbsp;
+                                  {item.status_name === "request" && (
+                                    <>
+                                      {/* <Button
                                     color="primary"
                                     onClick={() => {
                                       this.setState({
@@ -797,52 +862,52 @@ class TransactionPage extends React.Component {
                                   >
                                     Upload
                                   </Button> */}
-                                </>
-                              )}
-                              {item.status_name === "accept" && (
-                                <>
-                                  <Button
-                                    color="primary"
-                                    onClick={() => {
-                                      this.setState({
-                                        modalUpload: !this.state.modalUpload,
-                                        idtransaction: item.id,
-                                      });
-                                    }}
-                                  >
-                                    Upload
-                                  </Button>
-                                </>
-                              )}
-                              {
-                                item.status_name === "done" && (
-                                  <Button
-                                    color="success"
-                                    onClick={() => {
-                                      this.getDetailTransactions(item.id)
-                                      this.setState({ modal: !this.state.modal, modalType: 'review' })
-                                    }}
-                                    disabled={parseInt(item.review)}>
-                                      {
-                                        parseInt(item.review) ?
-                                        'Product Reviewed' :
-                                        'Review Product' 
-                                      }
-                                  </Button>
-                                )
-                              }
-                            </Col>
-                            {item.status_name === "accept" && (<><Col md="9 pt-3" style={{fontSize:"0.9em",color:"#ccc"}}><FontAwesomeIcon icon={faExclamationCircle} /> Your order will be processed after the proof of payment has been confirmed</Col>
-                              <Col md="3 pl-5"><a onClick={() => {
-                                  this.setState({ modalPayment: !this.state.modalPayment });
-                                  this.getDetailTransactions(item.id);
-                              }}
-                                 style={{cursor:"pointer",fontSize:"0.9em"}}>How to pay ?</a></Col></>)}
-                            
-                          </Row>
-                        </Container>
-                      </Card>
-                    </Col></>)}
+                                    </>
+                                  )}
+                                  {item.status_name === "accept" && (
+                                    <>
+                                      <Button
+                                        color="primary"
+                                        onClick={() => {
+                                          this.setState({
+                                            modalUpload: !this.state.modalUpload,
+                                            idtransaction: item.id,
+                                          });
+                                        }}
+                                      >
+                                        Upload
+                                      </Button>
+                                    </>
+                                  )}
+                                  {
+                                    item.status_name === "done" && (
+                                      <Button
+                                        color="success"
+                                        onClick={() => {
+                                          this.getDetailTransactions(item.id)
+                                          this.setState({ modal: !this.state.modal, modalType: 'review' })
+                                        }}
+                                        disabled={parseInt(item.review)}>
+                                        {
+                                          parseInt(item.review) ?
+                                            'Product Reviewed' :
+                                            'Review Product'
+                                        }
+                                      </Button>
+                                    )
+                                  }
+                                </Col>
+                                {item.status_name === "accept" && (<><Col md="9 pt-3" style={{ fontSize: "0.9em", color: "#ccc" }}><FontAwesomeIcon icon={faExclamationCircle} /> Your order will be processed after the proof of payment has been confirmed</Col>
+                                  <Col md="3 pl-5"><a onClick={() => {
+                                    this.setState({ modalPayment: !this.state.modalPayment });
+                                    this.getDetailTransactions(item.id);
+                                  }}
+                                    style={{ cursor: "pointer", fontSize: "0.9em" }}>How to pay ?</a></Col></>)}
+
+                              </Row>
+                            </Container>
+                          </Card>
+                        </Col></>)}
                     </>
                   );
                 })
@@ -851,33 +916,33 @@ class TransactionPage extends React.Component {
             }
           </Row>
           <Container className="mt-5">
-              <Row>
-                <Col md="4 m-auto" xs="9 m-auto" sm="4 m-auto">
-                  <Pagination aria-label="Page navigation example">
-                    <PaginationItem>
-                      <PaginationLink first href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink previous href="#" />
-                    </PaginationItem>
-                    {pageNumbers.map((item) => {
-                      return (
-                        <PaginationItem>
-                          <PaginationLink
-                            href="#"
-                            key={item}
-                            id={item}
-                            onClick={(event) => this.handleClick(event)}
-                          >
-                            {item}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    })}
-                  </Pagination>
-                </Col>
-              </Row>
-            </Container>
+            <Row>
+              <Col md="4 m-auto" xs="9 m-auto" sm="4 m-auto">
+                <Pagination aria-label="Page navigation example">
+                  <PaginationItem>
+                    <PaginationLink first href="#" />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationLink previous href="#" />
+                  </PaginationItem>
+                  {pageNumbers.map((item) => {
+                    return (
+                      <PaginationItem>
+                        <PaginationLink
+                          href="#"
+                          key={item}
+                          id={item}
+                          onClick={(event) => this.handleClick(event)}
+                        >
+                          {item}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+                </Pagination>
+              </Col>
+            </Row>
+          </Container>
         </Container>
       </Col>
     );

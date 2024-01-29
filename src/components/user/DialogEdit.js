@@ -3,8 +3,6 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Message } from 'primereact/message'
-import { connect } from 'react-redux';
-import { getProductAction } from '../../action'
 import HTTP from '../../service/HTTP';
 import { Dropdown } from 'primereact/dropdown';
 
@@ -49,7 +47,6 @@ class DialogEdit extends React.Component {
                     role,
                     iduser
                 })
-                console.log(edit.data)
                 this.setState({loading: false, userDialog: false})
                 this.props.toast(edit.data.messages)
                 this.props.getUser()

@@ -7,6 +7,8 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import DialogEdit from "../../components/user/DialogEdit";
 import { Toast } from "primereact/toast";
 import { connect } from "react-redux";
+import { Toolbar } from "primereact/toolbar";
+import DialogAdd from '../../components/user/DialogAdd';
 
 class ListUsersPage extends React.Component {
     constructor(props) {
@@ -17,7 +19,9 @@ class ListUsersPage extends React.Component {
             usersList: [],
             registeredUser: 0,
             userDetail: {},
-            userDialog: false
+            userDialog: false,
+            addDialog: false,
+            schoolsData: []
         }
     }
 
@@ -45,6 +49,20 @@ class ListUsersPage extends React.Component {
             console.log("getuser", error)
         }
     }
+
+    
+    getSchools = async () => {
+        try {
+            await HTTP.get(`/user/get-schools`).then((res) => {
+                console.log(res.data, "res.data")
+                this.setState({
+                    schoolsData: res.data,
+                });
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    };
 
     dateFormat = (value) => {
         return value.toLocaleDateString()
@@ -117,8 +135,33 @@ class ListUsersPage extends React.Component {
         );
     };
 
+    //TOOL BAR
+    leftToolbarTemplate = () => {
+        return (
+            <React.Fragment>
+                <h4>List of Users</h4>
+            </React.Fragment>
+        );
+    };
+
+    rightToolbarTemplate = () => {
+        return (
+            <React.Fragment>
+                <Button
+                    label="New Seller"
+                    icon="pi pi-plus"
+                    className="p-button-success mx-3"
+                    onClick={() => {
+                        this.getSchools()
+                        this.setState({ addDialog: true })
+                    }}
+                />
+            </React.Fragment>
+        );
+    };
+
     render() {
-        let { totalRevenue, totalUserTrans, usersList, registeredUser, userDetail, userDialog } = this.state
+        let { totalRevenue, totalUserTrans, usersList, registeredUser, userDetail, userDialog, addDialog } = this.state
         return (
             <div class="main-content">
                 <main>
@@ -155,11 +198,14 @@ class ListUsersPage extends React.Component {
                         </div>
                     </div>
 
-
                     <section class="recent">
                         <div class="list-user-grid">
                             <div class="activity-card">
-                                <h3>List of Users</h3>
+                                <Toolbar
+                                    className="p-mb-4 mb-3"
+                                    left={this.leftToolbarTemplate}
+                                    right={this.rightToolbarTemplate}
+                                ></Toolbar>
                                 <DataTable value={usersList} paginator rows={5} emptyMessage="No customers found" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" rowsPerPageOptions={[5, 10, 25, 50]}>
                                     <Column field="fullname" header="Name" sortable />
@@ -167,6 +213,7 @@ class ListUsersPage extends React.Component {
                                     <Column field="status" header="User Status" sortable />
                                     <Column field="created_at" body={this.printCreatedDate} header="Join Date" sortable />
                                     <Column field="updated_at" body={this.printLastUpdate} header="Last Update" sortable />
+                                    <Column field="school_name" header="School" sortable />
                                     {this.props.role === "admin" && <Column field="action" body={this.actionBodyTemplate} header="Action" />}
                                 </DataTable>
                             </div>
@@ -187,6 +234,23 @@ class ListUsersPage extends React.Component {
                                 life: 3000,
                             })
                         }
+                        getUser={() => this.getUser()}
+                    />
+                    <DialogAdd
+                        addDialog={addDialog}
+                        hide={() => this.setState({ addDialog: false })}
+                        inputChange={(e, property) => {
+                            this.inputChange(e, property);
+                        }}
+                        toast={(type, summary, detail) =>
+                            this.toast.show({
+                                severity: type,
+                                summary: summary,
+                                detail: detail,
+                                life: 3000,
+                            })
+                        }
+                        schoolsData={this.state.schoolsData}
                         getUser={() => this.getUser()}
                     />
                 </main>
