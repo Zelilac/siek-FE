@@ -25,7 +25,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faApple, faGooglePlay } from "@fortawesome/free-brands-svg-icons";
 import Slider from "react-slick";
-import ProductBanner from "../assets/images/bannerProduct.gif";
+import ProductBanner from "../assets/images/BannerProduct.gif";
 import Phone from "../assets/images/phone.png";
 import Feedback from "../assets/images/feedback.jpg";
 import Chat from "../assets/images/chat2.png";
