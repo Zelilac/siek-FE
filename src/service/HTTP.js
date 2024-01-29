@@ -23,7 +23,7 @@ class HTTP {
 
   post = (url, body) => {
     // let headers = {
-    //   ...headersParam,
+    //   // ...headersParam,
     //   headers: {
     //     'Authorization': `Bearer ${localStorage.getItem("tkn_id")}`
     //   },

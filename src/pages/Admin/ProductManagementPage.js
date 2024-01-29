@@ -357,7 +357,7 @@ class ProductManagementPage extends React.Component {
                 value={this.props.dataProduk}
                 headerColumnGroup={headerGroup}
                 paginator
-                rows={3}
+                rows={10}
                 className="p-datatable-sm datatable-style"
                 showGridlines
                 scrollable

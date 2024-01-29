@@ -15,9 +15,10 @@ class DialogAdd extends React.Component {
             username: '',
             email: '',
             gender: '',
+            school_id: '',
             age: '',
             role: 'seller',
-            loading: false
+            loading: false,
         };
         this.role = [
             { name: 'Seller', code: 'seller' },
@@ -39,8 +40,8 @@ class DialogAdd extends React.Component {
 
     saveChanges = async () => {
         try {
-            let { fullname, username, gender, age, email, role } = this.state
-            let checkField = [fullname, username, gender, age, email, role]
+            let { fullname, username, gender, age, email, role, school_id } = this.state
+            let checkField = [fullname, username, gender, age, email, role, school_id]
             if (checkField.indexOf("") > -1) {
                 this.setState({ error: true })
                 setTimeout(() => {
@@ -51,7 +52,7 @@ class DialogAdd extends React.Component {
                 try {
                     this.setState({ loading: true })
                     let edit = await HTTP.post('/user/post-user', {
-                        fullname, username, gender, age, email, role,
+                        fullname, username, gender, age, email, role, school_id
                     })
                     this.setState({ loading: false, addDialog: false })
                     this.props.toast("success", "Success!", edit.data.messages)
@@ -74,7 +75,7 @@ class DialogAdd extends React.Component {
     }
 
     render() {
-        let { addDialog, hide } = this.props
+        let { addDialog, hide, schoolsData } = this.props
 
         const addDialogFooter = (
             <React.Fragment>
@@ -106,6 +107,12 @@ class DialogAdd extends React.Component {
                         <InputNumber max={100} min={0} value={this.state.age} onChange={(e) => this.setState({ age: e.value })}
                             style={{ border: this.state.age === "" ? '1px solid red' : null }}
                         />
+                    </div>
+                    <div className="w-100 my-2">
+                        <label style={{ fontWeight: 'bold' }}>School</label>
+                        <Dropdown value={this.state.school_id} onChange={(e) => this.setState({ school_id: e.target.value })} options={schoolsData} optionLabel="name" optionValue="code"
+                            className="w-full md:w-14rem" style={{ border: this.state.school_id === "" ? '1px solid red' : null }} />
+                        {this.state.school_id === "" ? <small className="p-error">Required.</small> : null}
                     </div>
                     <div className="w-100 my-2">
                         <label style={{ fontWeight: 'bold' }} >Email</label>

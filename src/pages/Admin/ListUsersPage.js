@@ -21,6 +21,7 @@ class ListUsersPage extends React.Component {
             userDetail: {},
             userDialog: false,
             addDialog: false,
+            schoolsData: []
         }
     }
 
@@ -48,6 +49,20 @@ class ListUsersPage extends React.Component {
             console.log("getuser", error)
         }
     }
+
+    
+    getSchools = async () => {
+        try {
+            await HTTP.get(`/user/get-schools`).then((res) => {
+                console.log(res.data, "res.data")
+                this.setState({
+                    schoolsData: res.data,
+                });
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    };
 
     dateFormat = (value) => {
         return value.toLocaleDateString()
@@ -133,10 +148,13 @@ class ListUsersPage extends React.Component {
         return (
             <React.Fragment>
                 <Button
-                    label="New"
+                    label="New Seller"
                     icon="pi pi-plus"
                     className="p-button-success mx-3"
-                    onClick={() => this.setState({ addDialog: true })}
+                    onClick={() => {
+                        this.getSchools()
+                        this.setState({ addDialog: true })
+                    }}
                 />
             </React.Fragment>
         );
@@ -195,6 +213,7 @@ class ListUsersPage extends React.Component {
                                     <Column field="status" header="User Status" sortable />
                                     <Column field="created_at" body={this.printCreatedDate} header="Join Date" sortable />
                                     <Column field="updated_at" body={this.printLastUpdate} header="Last Update" sortable />
+                                    <Column field="school_name" header="School" sortable />
                                     {this.props.role === "admin" && <Column field="action" body={this.actionBodyTemplate} header="Action" />}
                                 </DataTable>
                             </div>
@@ -231,6 +250,8 @@ class ListUsersPage extends React.Component {
                                 life: 3000,
                             })
                         }
+                        schoolsData={this.state.schoolsData}
+                        getUser={() => this.getUser()}
                     />
                 </main>
             </div>

@@ -169,7 +169,7 @@ class DialogAdd extends React.Component {
                     </div>
                     <div className="w-100 my-2">
                         <label htmlFor="minmax-buttons" style={{ fontWeight: 'bold' }}>Price</label>
-                        <InputNumber inputId="minmax-buttons" mode="decimal" showButtons min={0} mode="currency" currency="IDR" onValueChange={(e) => this.setState({ price: e.target.value })} />
+                        <InputNumber inputId="minmax-buttons" showButtons min={0} mode="currency" currency="IDR" onValueChange={(e) => this.setState({ price: e.target.value })} />
                         {!price && <small className="p-error">Required.</small>}
                     </div>
                     <div className="w-100 my-2">

@@ -76,7 +76,7 @@ class TransactionPage extends React.Component {
   }
 
   componentDidMount() {
-    this.getTransactionHistory(this.state.activeIndex+1);
+    this.getTransactionHistory(this.state.activeIndex + 1);
   }
 
   getDetailTransactions = async (idtransaction) => {
@@ -153,7 +153,7 @@ class TransactionPage extends React.Component {
   onBtnSubmitReview = async () => {
     try {
       await HTTP.post('/product/review', this.state.productReview)
-      this.getTransactionHistory(this.state.activeIndex+1)
+      this.getTransactionHistory(this.state.activeIndex + 1)
       this.setState({ modal: !this.state.modal })
     } catch (error) {
       console.log(error)
@@ -168,7 +168,21 @@ class TransactionPage extends React.Component {
         summary: "Success!",
         life: 3000,
       })
-      this.getTransactionHistory(this.state.activeIndex+1)
+      this.getTransactionHistory(this.state.activeIndex + 1)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  onBtnItemFinished = async (id) => {
+    try {
+      await HTTP.patch(`/transaction/finished/${id}`)
+      this.toast.show({
+        severity: "success",
+        summary: "Success!",
+        life: 3000,
+      })
+      this.getTransactionHistory(this.state.activeIndex + 1)
     } catch (error) {
       console.log(error)
     }
@@ -319,7 +333,7 @@ class TransactionPage extends React.Component {
                   <Form>
                     <FormGroup>
                       <Label>Review :</Label>
-                      <Input value={this.state.productReview[idx] && this.state.productReview[idx].review} onChange={(e) => this.onInputChange(e.target.value, idx)}/>
+                      <Input value={this.state.productReview[idx] && this.state.productReview[idx].review} onChange={(e) => this.onInputChange(e.target.value, idx)} />
                     </FormGroup>
                   </Form>
                   <br />
@@ -397,7 +411,7 @@ class TransactionPage extends React.Component {
               alertUpload: !this.state.alertUpload,
             });
           }, 3000);
-          this.getTransactionHistory(this.state.activeIndex+1);
+          this.getTransactionHistory(this.state.activeIndex + 1);
         })
         .catch((err) => {
           console.log(err);
@@ -759,6 +773,17 @@ class TransactionPage extends React.Component {
                                     <Button
                                       color="success"
                                       onClick={() => {
+                                        this.onBtnItemFinished(item.id)
+                                      }}>
+                                      Finished
+                                    </Button>
+                                  )
+                                }
+                                {
+                                  item.status_name === "done" && (
+                                    <Button
+                                      color="success"
+                                      onClick={() => {
                                         this.getItemTransactions(item.id)
                                         this.setState({ modal: !this.state.modal, modalType: 'review' })
                                       }}
@@ -772,7 +797,7 @@ class TransactionPage extends React.Component {
                                   )
                                 }
                               </Col>
-                              <Col md="9 pt-3" style={{ fontSize: "0.9em", color: "#ccc" }}><FontAwesomeIcon icon={faExclamationCircle} /> Your order will be processed after the proof of payment has been confirmed</Col>
+                              { item.status_name === "request" && <Col md="9 pt-3" style={{ fontSize: "0.9em", color: "#ccc" }}><FontAwesomeIcon icon={faExclamationCircle} /> Your order will be processed after the proof of payment has been confirmed</Col>}
                               <Col md="3 pl-5">{item.status_name === "request" && (<><a onClick={() => {
                                 this.setState({ modalPayment: !this.state.modalPayment });
                                 this.getDetailTransactions(item.id);

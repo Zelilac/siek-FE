@@ -37,39 +37,41 @@ class NavbarComp extends React.Component {
     this.checkImage()
     let btns = document.querySelectorAll(`.menu-item`);
     for (var i = 0; i < btns.length; i++) {
-      btns[i].addEventListener('click', function(e){
-         var current = document.getElementsByClassName("active");
-         current[0].classList.remove('active');
-         this.classList.add('active');
-         var array = [];
-         array.push(btns);
-         localStorage.setItem('element', this.innerText);
+      btns[i].addEventListener('click', function (e) {
+        var current = document.getElementsByClassName("active");
+        if (current.length > 0) {
+          current[0].classList.remove('active');
+          this.classList.add('active');
+          var array = [];
+          array.push(btns);
+          localStorage.setItem('element', this.innerText);
+        }
       });
-   }
+    }
 
-   this.setActivatedItem(btns)
+    this.setActivatedItem(btns)
   }
 
 
-  setActivatedItem(btns){
+  setActivatedItem(btns) {
     var item = localStorage.getItem('element');
 
-    if(item){
-        for (var a = 0; a < btns.length; a++) {
-            if(btns[a].innerText == item){
-                btns[a].classList.add('active');
-            }else{
-                btns[a].classList.remove('active');
-            }
+    if (item) {
+      for (var a = 0; a < btns.length; a++) {
+        if (btns[a].innerText == item) {
+          btns[a].classList.add('active');
+        } else {
+          btns[a].classList.remove('active');
         }
+      }
     }
-}
+  }
 
 
   checkImage = () => {
-    if(this.props.user.profile_image){
+    if (this.props.user.profile_image) {
       return `${URL_API}/${this.props.user.profile_image}`
-    }else{
+    } else {
       return Profile
     }
   }
@@ -162,13 +164,13 @@ class NavbarComp extends React.Component {
                   </NavLink>
                 </Link>
               </NavItem>
-              {this.props.user.role === "user" ?(<><NavItem>
+              {this.props.user.role === "user" ? (<><NavItem>
                 <Link to="/custom">
                   <NavLink>
                     <a className="menu-item">Custom Order</a>
                   </NavLink>
                 </Link>
-              </NavItem></>):(<></>)}
+              </NavItem></>) : (<></>)}
             </Nav>
             {this.props.user.role === "user" ? (
               <div className="d-flex justify-content-end align-items-center drop-menu">
@@ -233,42 +235,42 @@ class NavbarComp extends React.Component {
                 <NavItem type="none" style={{ marginRight: "10px" }}>
                   <a>{this.props.user.fullname.split(" ")[0]}</a>
                 </NavItem>
-                {this.props.user.profile_image ?(<><img
+                {this.props.user.profile_image ? (<><img
                   src={`${URL_API}/${this.props.user.profile_image}`}
                   width="35px;"
                   height="35px;"
                   style={{ borderRadius: "50%" }}
                   alt="profile image"
-                /></>):(
+                /></>) : (
                   <>
-                  <img
-                  src={Profile}
-                  width="35px;"
-                  height="35px;"
-                  style={{ borderRadius: "50%" }}
-                  alt="profile image"
-                />
-                </>
+                    <img
+                      src={Profile}
+                      width="35px;"
+                      height="35px;"
+                      style={{ borderRadius: "50%" }}
+                      alt="profile image"
+                    />
+                  </>
                 )}
-                
+
                 <UncontrolledDropdown>
                   <DropdownToggle nav caret></DropdownToggle>
                   <DropdownMenu right>
-                    <Link to ={{
-                        pathname: "/profile", 
-                        state: { 
-                          indexActive:1
-                        }
-                      }} style={{ textDecoration: "none" }}>
+                    <Link to={{
+                      pathname: "/profile",
+                      state: {
+                        indexActive: 1
+                      }
+                    }} style={{ textDecoration: "none" }}>
                       <DropdownItem>Edit Profile</DropdownItem>
                     </Link>
-                    <Link to ={{
-                        pathname: "/profile", 
-                        state: { 
-                          indexActive:3
-                        }
-                      }} style={{ textDecoration: "none" }}>
-                    <DropdownItem>Transactions</DropdownItem>
+                    <Link to={{
+                      pathname: "/profile",
+                      state: {
+                        indexActive: 3
+                      }
+                    }} style={{ textDecoration: "none" }}>
+                      <DropdownItem>Transactions</DropdownItem>
                     </Link>
                     <Link
                       to="/"
