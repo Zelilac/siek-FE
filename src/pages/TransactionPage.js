@@ -224,12 +224,18 @@ class TransactionPage extends React.Component {
                             {item.address}, {item.postal_code}
                           </p>
                         </Col>
-                        <Col md="12">
+                        <Col md="6">
                           <p>
                             Note : <br />
                             {item.note}
                           </p>
                         </Col>
+                        {item.resi_number && <Col md="6">
+                          <p>
+                            Resi : <br />
+                            {item.resi_number}
+                          </p>
+                        </Col>}
                       </>
                     );
                   })}

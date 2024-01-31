@@ -144,7 +144,7 @@ class LandingPage extends React.Component {
     console.log("user", this.props.user);
     console.log("filter", this.state.filter);
     return (
-      <Container fluid className="p-0">
+      <Container fluid className="p-0 bg-white">
         <Row>
           <Col xl="12" lg="12" md="12 mt-5" sm="12 mt-5" xs="12 mt-5">
             <Carousel showThumbs={false} showStatus={false}>

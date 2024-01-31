@@ -118,3 +118,12 @@
   transform: translateY(-50%) translateX(0px);
   opacity: 1;
 }
+
+.bg-white {
+  background-color: white !important;
+}
+
+.container-fluid {
+  background-color: white !important;
+}
+
