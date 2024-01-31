@@ -1,5 +1,5 @@
 // URL
-export const URL_API = `https://smk-pasti-bisa-7344d090c5a1.herokuapp.com/`;
+export const URL_API = `https://pkksmk.my.id/api/`;
 
 // USER CONTROLLER
 export const LOGIN_SUCCES = "LOGIN_SUCCESS";
