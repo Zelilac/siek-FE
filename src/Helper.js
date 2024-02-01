@@ -1,5 +1,5 @@
 // URL
-export const URL_API = `https://pkksmk.my.id/api/`;
+export const URL_API = `http://localhost:2010`;
 
 // USER CONTROLLER
 export const LOGIN_SUCCES = "LOGIN_SUCCESS";

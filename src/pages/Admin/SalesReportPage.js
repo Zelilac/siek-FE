@@ -8,6 +8,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { InputText } from 'primereact/inputtext';
 import { URL_API } from '../../Helper';
 import 'primereact/resources/themes/md-light-deeppurple/theme.css'
 
@@ -22,8 +23,8 @@ const data = {
     ]
 };
 
-
-let filter = { selectedTime: 'Yearly', selectedDetailTime: '2021', year: '2021' }
+let filter = { selectedTime: '', selectedDetailTime: '', year: '', schoolName: "" }
+let schoolFilter = {name: 'SMK 1 Pancasila'}
 class SalesReportPage extends React.Component {
     constructor(props) {
         super(props);
@@ -38,8 +39,15 @@ class SalesReportPage extends React.Component {
             totalUnconfirmed: null
         }
 
+        this.school = [
+            {name: "SMK 1 Pancasila", code:1},
+            {name: "SMK 2 Pancasila", code:2},
+            {name: "SMK 2 Pancasila", code:3}
+        ]
+
         this.time = [
-            { name: 'Yearly', code: 'Yearly' }, { name: 'Monthly', code: 'Monthly' }];
+            { name: 'Yearly', code: 'Yearly' }, 
+            { name: 'Monthly', code: 'Monthly' }];
 
         this.year = [
             { name: '2020', code: '2020' },
@@ -201,18 +209,6 @@ class SalesReportPage extends React.Component {
                     <div>
                         <div className="d-flex justify-content-between my-2">
                             <h2>Sales Chart</h2>
-                            <div>
-                                <Dropdown optionLabel="name" value={filter.selectedTime} options={this.time} onChange={(e) => this.onTimeChange("selectedTime", e.value)} placeholder="Select Time" />
-                                <Dropdown optionLabel="name" value={filter.selectedDetailTime}
-                                    options={filter.selectedTime.name === 'Yearly' ? this.year : this.month}
-                                    onChange={(e) => this.onTimeChange("selectedDetailTime", e.value)} placeholder="Select Detail" className="mx-3" />
-                                {
-                                    filter.selectedTime.name === "Monthly"
-                                    &&
-                                    <Dropdown optionLabel="name" value={filter.year} options={this.year} onChange={(e) => this.onTimeChange("year", e.value)} placeholder="Select Time" className="mr-3" />
-                                }
-                                <Button label="Filter" className="p-button-raised h-100" onClick={this.onBtnFilter} />
-                            </div>
                         </div>
                         <div className="d-flex align-items-center">
                             
@@ -252,8 +248,25 @@ class SalesReportPage extends React.Component {
                         </div>
                     </div>
                     <hr />
+
                     {/* Product Sales */}
-                    <div>
+                    {/* Filter */}
+                    <div style={{display: "flex", justifyContent: "flex-end"}}>
+                        <Dropdown optionLabel="name" value={filter.selectedTime} options={this.time} onChange={(e) => this.onTimeChange("selectedTime", e.value)} placeholder="Select Time" />
+                        <Dropdown optionLabel="name" value={filter.selectedDetailTime}
+                            options={filter.selectedTime.name === 'Yearly' ? this.year : this.month}
+                            onChange={(e) => this.onTimeChange("selectedDetailTime", e.value)} placeholder="Select Detail" className="mx-3" />
+                            {
+                                filter.selectedTime.name === "Monthly"
+                                &&
+                                <Dropdown optionLabel="name" value={filter.year} options={this.year} onChange={(e) => this.onTimeChange("year", e.value)} placeholder="Select Time" className="mr-3" />
+                            }
+                        <Dropdown optionLabel="name" value={filter.schoolName} options={this.school} onChange={(e) => this.onTimeChange("schoolName", e.value)} placeholder="Select School Name" />
+                        <Button label="Filter" className="p-button-raised ml-2" onClick={this.onBtnFilter} style={{width:"8vw"}}/>
+                        <Button label="Reset" className="p-button-danger ml-2" onClick={""} style={{width:"5vw"}}/>
+                    </div>
+                    {/* List Of Products */}
+                    <div className='mt-4'>
                         <Card title="Product Sales Recap" subTitle="Recap of all product sales">
                             <DataTable value={productSales} paginator rows={5} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -263,10 +276,11 @@ class SalesReportPage extends React.Component {
                                 onRowToggle={(e) => this.setState({ expandedRows: e.data })}>
                                 <Column expander />
                                 <Column header="Image" body={this.imageBodyTemplate} />
+                                <Column field="school_name" header="School Name" sortable />
                                 <Column field="product_name" header="Name" sortable />
                                 <Column field="pack_price" header="Price" sortable />
                                 <Column field="type" header="Type" sortable />
-                                <Column field="unit_price" header="Unit Price" sortable />
+                                {/* <Column field="unit_price" header="Unit Price" sortable /> */}
                                 <Column field="unit" header="Unit" sortable />
                                 <Column field="status" header="Status" sortable />
                             </DataTable>
