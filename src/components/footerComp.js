@@ -14,7 +14,7 @@ class FooterComp extends React.Component {
   }
   render() {
     return (
-      <footer className="text-center text-white footer-item">
+      <footer className="text-center text-white footer-item" style={{position:"fixed", position:"bottom"}}>
         <div className="container pt-3 pb-1">
           <section className="mb-4">
             <div className="d-flex justify-content-evenly text-black">
