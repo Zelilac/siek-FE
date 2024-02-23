@@ -661,7 +661,7 @@ class ProductPage extends React.Component {
     }
     return (
       <Container fluid className="mt-5">
-        <Container style={{position:"fixed",zIndex:999,top:"10%"}} className="p-3 my-2 rounded">
+        <Container style={{top:"5%"}} className="p-3 my-2 rounded">
         <Toast isOpen={this.state.show}>
           <ToastHeader>
             Add To Cart

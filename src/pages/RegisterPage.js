@@ -136,7 +136,7 @@ class RegisterPage extends React.Component {
           }}
         >
           <div
-            className="col-6 d-none d-md-flex justify-content-center align-items-center"
+            className="col-lg-6 col-xl-6 col-md-12 col-sm-12 d-none d-md-flex justify-content-center align-items-center"
             style={{
               padding: "0 60px",
               height: "100%",
@@ -148,7 +148,7 @@ class RegisterPage extends React.Component {
             <img src={doctorMan} style={{ height: "80%" }} />
           </div>
           <div
-            className="col-6 d-flex flex-column justify-content-center w-xs-100 w-sm-100 w-md-50"
+            className="col-lg-6 col-xl-6 col-md-12 col-sm-12 d-flex flex-column justify-content-center w-xs-100 w-sm-100 w-md-50"
             style={{ padding: "0 60px", height: "100%" }}
           >
             <div>

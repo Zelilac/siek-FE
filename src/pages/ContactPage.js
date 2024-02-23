@@ -137,7 +137,7 @@ class ContactPage extends React.Component {
                             placeholder="Enter your message"
                           />
                         </Col>
-                        <Col md="12 mt-3">
+                        <Col md="12 mt-5 mb-5">
                           <Button color="primary" style={{ width: "100%" }}>
                             Send Message{" "}
                           </Button>

@@ -31,7 +31,6 @@ import Feedback from "../assets/images/feedback.jpg";
 import Chat from "../assets/images/chat2.png";
 import Delivery from "../assets/images/delivery.png";
 import Tilt from "react-vanilla-tilt";
-import "../assets/css/navigation.css";
 import { getProductAction } from "../action";
 
 var settings = {
@@ -140,13 +139,10 @@ class LandingPage extends React.Component {
   };
 
   render() {
-    console.log("products", this.props.products);
-    console.log("user", this.props.user);
-    console.log("filter", this.state.filter);
     return (
       <Container fluid className="p-0 bg-white">
         <Row>
-          <Col xl="12" lg="12" md="12 mt-5" sm="12 mt-5" xs="12 mt-5">
+          <Col xl="12" lg="12" md="12" sm="12" xs="12" style={{marginTop:"60px"}}>
             <Carousel showThumbs={false} showStatus={false}>
               <div>
                 <img src={ProductBanner} />

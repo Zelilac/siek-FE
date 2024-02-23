@@ -235,3 +235,8 @@
   color: white;
   font-size: 0.9em;
 }
+
+.signupBtn, .signinBtn{
+  background-color: #239CFF !important;
+  color: whitesmoke !important;
+}
