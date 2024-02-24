@@ -123,12 +123,7 @@
   background-color: white !important;
 }
 
-.container-fluid {
+.container-fluid, .container, #root {
   background-color: white !important;
 }
-
-.container {
-  background-color: white !important;
-}
-
 
